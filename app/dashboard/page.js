@@ -1,42 +1,24 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import { createTestUser, fetchTest } from "../lib/data";
+import { fetchTest } from "../lib/data";
+import { createTestUser } from "../lib/actions";
 
-export default function Page() {
-  const [users, setUsers] = useState([]);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-
-  // Fetch users when component mounts
-  useEffect(() => {
-    async function loadData() {
-      const fetchedUsers = await fetchTest();
-      setUsers(fetchedUsers);
-    }
-    loadData();
-  }, []);
-
-  const handleCreateUser = async () => {
-    try {
-      const newUser = await createTestUser(firstName, lastName);
-      setUsers([...users, newUser]); // Add new user to the state
-      setFirstName(""); // Clear the input fields after submission
-      setLastName("");
-    } catch (error) {
-      console.error("Error creating user:", error);
-    }
-  };
+export default async function Page() {
+  const test = await fetchTest();
+  console.log("test--", test);
 
   return (
     <div>
-      {users.map((user, id) => (
-        <div key={id}>
-          {user.first_name} {user.last_name}
-        </div>
-      ))}
-      <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First Name" />
-      <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last Name" />
-      <button onClick={handleCreateUser}>Create User</button>
+      {test.map((user, id) => {
+        return (
+          <div key={id}>
+            {user.first_name} {user.last_name}
+          </div>
+        );
+      })}
+      <form action={createTestUser}>
+        <input type="text" name="first_name" />
+        <input type="text" name="last_name" />
+        <button type="submit">Create User</button>
+      </form>
     </div>
   );
 }
